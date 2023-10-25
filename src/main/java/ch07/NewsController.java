@@ -34,7 +34,7 @@ public class NewsController extends HttpServlet {
 
   @Override
   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    req.setCharacterEncoding("utf-8");
+//    req.setCharacterEncoding("utf-8"); 여기서 지우고, 필터로 인코딩해보기
     String action = req.getParameter("action");
     String view = null;
     Method m;
@@ -79,11 +79,11 @@ public class NewsController extends HttpServlet {
         view = view.substring("redirect:/".length());
         resp.sendRedirect(view);
       } else {
-        ctx.getRequestDispatcher("/ch07/"+ view).forward(req,resp);
+        ctx.getRequestDispatcher("/ch07/"+ view).forward(req);
       }
     }
   }
-  public String addNews(HttpServletRequest req, HttpServletResponse resp) {
+  public String addNews(HttpServletRequest req) {
     News news = new News();
     try {
       Part part = req.getPart("img");
@@ -98,11 +98,16 @@ public class NewsController extends HttpServlet {
       newsDAO.addNews(news);
     } catch (Exception e) {
       e.printStackTrace();
+      ctx.log("뉴스 등록 에러");
+      req.setAttribute("error", "뉴스 등록 안됨");
+      return list(req);
     }
     return "redirect:/news.nhn?action=list";
   }
-  public String list(HttpServletRequest req, HttpServletResponse resp) {
-    List<News> list;
+  public String list(HttpServletRequest req) {
+    String err = (String) req.getAttribute("error");
+    System.out.println("err == " + err);
+//    list<News> list;
     try {
 //      list = ;
     } catch (Exception e) {
@@ -110,14 +115,19 @@ public class NewsController extends HttpServlet {
     }
     return null;
   }
-  public String delNews(HttpServletRequest req, HttpServletResponse resp) {
+  public String delNews(HttpServletRequest req) {
+
+
     return null;
   }
-  public String getNews(HttpServletRequest req, HttpServletResponse resp) {
+  public String getNews(HttpServletRequest req) {
     try {
       News news = newsDAO.getNews(Integer.parseInt(req.getParameter("aid")));
     } catch (SQLException e) {
       e.printStackTrace();
+      ctx.log("뉴스 가져오는 과정에서 문제 발생");
+      req.setAttribute("error", "뉴스 정상적으로 가져오지 못함");
+      return list(req);
     }
     return "newsView.jsp";
   }

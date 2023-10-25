@@ -25,6 +25,11 @@
     </c:forEach>
     <%-- <a href="/news.nhn?action=insert">추가하기</a> --%>
 </table>
+<hr>
+
+<c:if test="${error != null}">
+    <div>"error 발생 ${error}"</div>
+</c:if>
 
 <button type="button" data-bs-toggle="collapse" data-bs-target="#addForm"
         aria-expanded="false" aria-controls="addForm">뉴스 등록</button>
